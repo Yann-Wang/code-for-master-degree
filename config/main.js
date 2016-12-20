@@ -7,10 +7,10 @@ module.exports = {
     },
     // 数据库设置
     mongo: {
-        url: 'mongodb://127.0.0.1:27017/activity'
+        url: 'mongodb://192.168.68.130:27017/activity'
     },
     redis:{
-        host:'192.168.68.130',
+        host:'127.0.0.1',
         port: 6379,
         db: 0
     }

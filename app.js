@@ -11,11 +11,9 @@ const Config = require('./application/routes/Config');
 const Err = require('./config/error');
 const conn = require('./application/lib/conn');
 
-// global middlewares
-// app.use(views('views', {
-//   root: __dirname + '/views',
-//   default: 'jade'
-// }));
+//连接数据库
+app.use(conn.start());
+
 app.keys = ['some secret hurr'];
 app.use(require('koa-bodyparser')());
 app.use(json());

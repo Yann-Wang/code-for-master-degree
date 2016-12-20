@@ -8,15 +8,17 @@ let _redis = require('redis');
 let wrapper = require('co-redis');
 let config = require('../../config/main');
 var debug = require('debug')('app:conn');
-
+require('colors');
 
 //创建redis连接
 let redisClient = _redis.createClient(config.redis.port, config.redis.host);
-/*redisClient.auth(config.redis.pass, function () {
-    debug('redis登录成功,host:%s'.green, config.redis.host);
-});*/
+
 redisClient.select(config.redis.db, function () {
     debug('redis数据库选择成功,db:%d'.green, config.redis.db);
+});
+
+redisClient.on('ready',function () {
+    debug('redis数据库连接成功'.green);
 });
 
 
@@ -30,8 +32,8 @@ co(function*() {
 //数据库连接
 exports.start = function () {
     return function*(next) {
-        debug('-------------------------------------------------------------------')
-        yield next;
+        debug('----------------------->');
+        //yield next;
     }
 }
 
@@ -39,7 +41,7 @@ exports.start = function () {
 exports.redisStore = function () {
     return redisStore({
         host: config.redis.host,
-        port: config.redis.port,
-        db: config.redis.db
+        port: config.redis.port
+
     })
 }
