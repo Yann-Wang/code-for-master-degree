@@ -1,10 +1,9 @@
 "use strict";
 const mongoose = require('mongoose');
-const Dao = require('../dao/Dao');
-// 集合名称
-const collection = 'user';
-// schema config
-const config = {
+let Schema = mongoose.Schema;
+
+// userSchema
+const userSchema = new Schema({
     // _id: {
     //     type: mongoose.Schema.Types.ObjectId
     // },
@@ -31,21 +30,20 @@ const config = {
     email: {
         type: String
     }
-};
-// schema options
-const options = {};
-const Schema = new mongoose.Schema(config, options);
-// methods Model的实例方法
-Schema.methods = {
+});
+
+// Model的实例方法
+/*userSchema.methods = {
     speak: function () {
         console.log(this.account);
     },
     findOtherByNickname: function () {
         return this.model(collection).find({nickname: this.nickname});
     }
-};
+};*/
+
 // 定义Model 的类方法
-Schema.statics = {
+userSchema.statics = {
     findByAccount: function *(account) {
         try {
             const result = yield this.find({account: account})
@@ -71,5 +69,8 @@ Schema.statics = {
         }
     }
 };
-// export
-module.exports = Dao.connect.model(collection, Schema, collection);
+
+let User = mongoose.model('user', userSchema);
+
+
+module.exports = User;

@@ -7,7 +7,7 @@ let redisStore = require('koa-redis');
 let _redis = require('redis');
 let wrapper = require('co-redis');
 let config = require('../../config/main');
-var debug = require('debug')('app:conn');
+let debug = require('debug')('app:conn');
 require('colors');
 
 //创建redis连接
@@ -27,15 +27,7 @@ co(function*() {
     global.redis = wrapper(redisClient);
 }).catch(function (err) {
     debug('数据库连接失败 %s'.red, err);
-})
-
-//数据库连接
-exports.start = function () {
-    return function*(next) {
-        debug('----------------------->');
-        //yield next;
-    }
-}
+});
 
 //session连接句柄
 exports.redisStore = function () {
@@ -44,4 +36,4 @@ exports.redisStore = function () {
         port: config.redis.port
 
     })
-}
+};

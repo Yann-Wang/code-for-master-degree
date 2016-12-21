@@ -1,18 +1,30 @@
 'use strict';
 
-const app = require('koa')(),
-    router = require('koa-router')(),
-    logger = require('koa-logger'),
-    json = require('koa-json'),
-    session = require('koa-session');
+const app = require('koa')();
+const router = require('koa-router')();
+const logger = require('koa-logger');
+const json = require('koa-json');
+const session = require('koa-session');
+const mongoose=require('mongoose');
+let debug = require('debug')('app:request');
 
 const User = require('./application/routes/User');
 const Config = require('./application/routes/Config');
-const Err = require('./config/error');
-const conn = require('./application/lib/conn');
+const session_filter = require('./application/middleware/session_filter');
+const authorization = require('./application/middleware/authorization');
+const testCase = require('./test');
 
-//连接数据库
-app.use(conn.start());
+//连接redis数据库
+require('./application/lib/conn');
+
+//mongooose初始化配置
+require('./application/lib/conn2')(mongoose);
+
+// 请求分割线
+app.use(function*(next) {
+    debug('---------split line-------------->');
+    yield next;
+});
 
 app.keys = ['some secret hurr'];
 app.use(require('koa-bodyparser')());
@@ -20,58 +32,11 @@ app.use(json());
 app.use(logger());
 app.use(session(app));
 
-app.use(function *(next) {
-    try {
-        const start = new Date;
-        yield next;
-        const ms = new Date - start;
-        console.log('%s %s - %s', this.method, this.url, ms);
-    } catch (e) {
-        console.error.call(console, e);
-    }
-});
-
 // session filter
-app.use(function *(next){
-    // ignore
-    const ignores = Object.freeze([/^\/$/, /\/user\/login$/, /\/config\/getConfig$/, /\.(html|jpg|png|gif|ico|js|css|mp4|eot|svg|ttf|woff|mp3|json|woff2)$/i]);
+app.use(session_filter());
 
-    // 如果当前请求的接口url在ignores数组中，或者当前用户已经存在session.user，则通过
-    const some = ignores.some(item => item.test(this.request.url));
-
-    if (some || this.session.user) {
-        yield next;
-    } else {
-        this.body = {
-            success: false,
-            error: Err.E1003
-        }
-    }
-})
-
-// 权限过滤
-app.use(function *(next){
-    // role ignore
-    const ignores = Object.freeze([/^\/$/, /^\/app/, /\.(html|jpg|png|gif|ico|js|css|mp4|eot|svg|ttf|woff|mp3|json|woff2)$/i]);
-
-    // 如果当前请求的接口url在ignores数组中，或者当前用户拥有改接口权限，则通过
-    const some = ignores.some(item => item.test(this.request.url));
-
-    const roles = this.session.roles || []
-
-    // 用户的权限信息放在session中  this.session.roles
-    // this.session.roles 用户权限数组  item为正则表达式
-    const roleTest = roles.some(item => item.test(this.request.url));
-    if (some || roleTest) {
-
-        yield next;
-    } else {
-        this.body = {
-            success: false,
-            error: Err.E2001
-        }
-    }
-})
+// authorization
+app.use(authorization());
 
 app.use(require('koa-static')(__dirname + '/static'));
 
@@ -79,6 +44,7 @@ app.use(require('koa-static')(__dirname + '/static'));
 router.prefix('/app');
 router.use('/user', User.routes(), User.allowedMethods());
 router.use('/config', Config.routes(), Config.allowedMethods());
+router.use('/test', testCase.routes(), testCase.allowedMethods());
 
 // mount root routes
 app.use(router.routes());

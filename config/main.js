@@ -7,7 +7,19 @@ module.exports = {
     },
     // 数据库设置
     mongo: {
-        url: 'mongodb://192.168.68.130:27017/activity'
+        development:{
+            url: 'mongodb://192.168.68.130:27017/activity'
+        },
+        production:{
+            url: 'mongodb://192.168.68.130:27017/activity'
+        },
+        opts: {
+            server: {
+                socketOptions: {
+                    keepAlive: 1
+                }
+            }
+        }
     },
     redis:{
         host:'127.0.0.1',

@@ -1,6 +1,7 @@
 'use strict';
+let co = require('co');
 const router = require('koa-router')();
-const UserSchema = require('../schema/UserSchema');
+const UserSchema = require('../models/UserSchema');
 const Err = require('../../config/error');
 
 /**
@@ -99,5 +100,14 @@ router.get('/save', function *(next) {
 
     this.body = {success: true}
 });
+
+/**
+ * 新增用户
+ */
+router.get('/captcha', function *(next) {
+
+
+});
+
 
 module.exports = router;
