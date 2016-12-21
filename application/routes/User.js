@@ -3,6 +3,7 @@ let co = require('co');
 const router = require('koa-router')();
 const UserSchema = require('../models/UserSchema');
 const Err = require('../../config/error');
+const ccap = require('ccap');
 
 /**
  * 登录接口
@@ -78,7 +79,7 @@ router.post('/logout', function *(next) {
  * 新增用户
  */
 router.get('/save', function *(next) {
-    var user = {
+    let user = {
         account: 'admin',
         nickname: 'admin_system',
         password: 'D033E22AE348AEB5660FC2140AEC35850C4DA997',
@@ -105,6 +106,10 @@ router.get('/save', function *(next) {
  * 新增用户
  */
 router.get('/captcha', function *(next) {
+    let captcha = ccap();
+    let ary = captcha.get();//ary[0] is captcha's text,ary[1] is captcha picture buffer.
+    let text = ary[0];
+    let buffer = ary[1];
 
 
 });
