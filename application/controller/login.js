@@ -38,8 +38,9 @@ exports.handleLogin = function *(next) {
         let hashed_password = md5Hex([pwd,user.salt]);
 
         if (hashed_password === user.hashed_password) {
-            // create session
+            //将uid, roles存入session中
             this.session.uid = user.uid;
+            this.session.roles = user.roles;
 
             this.body = {
                 success: true,

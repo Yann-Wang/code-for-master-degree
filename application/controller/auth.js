@@ -22,6 +22,8 @@ exports.handleAuth = function *(next) {
         roles.push('auth');
         yield userSchema.update({phone:phone},{roles:roles});
 
+        this.session.roles = roles;
+
         this.body = {
             success: true
         };

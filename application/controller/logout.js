@@ -3,13 +3,10 @@
  */
 
 /**
- * 注销接口
- *
- * 1、清除session
- * 2、完成
+ * 注销
  */
 exports.handleLogout = function *(next) {
-    // create session
+    // remove session
     this.session = null;
     this.body = {
         success: true

@@ -3,7 +3,8 @@
  */
 'use strict';
 let co = require('co');
-let redisStore = require('koa-redis');
+let redisStore = require('koa-redis'); // for session
+
 let _redis = require('redis');
 let wrapper = require('co-redis');
 let config = require('../../config/main');
@@ -33,7 +34,7 @@ co(function*() {
 exports.redisStore = function () {
     return redisStore({
         host: config.redis.host,
-        port: config.redis.port
-
-    })
+        port: config.redis.port,
+        db:   config.redis.db
+    });
 };
