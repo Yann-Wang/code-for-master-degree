@@ -9,6 +9,7 @@ const mongoose=require('mongoose');
 let debug = require('debug')('app:request');
 
 const User = require('./application/routes/User');
+const Account = require('./application/routes/Account');
 const Config = require('./application/routes/Config');
 const session_filter = require('./application/middleware/session_filter');
 const authorization = require('./application/middleware/authorization');
@@ -43,6 +44,7 @@ app.use(require('koa-static')(__dirname + '/static'));
 // routes definition
 router.prefix('/app');
 router.use('/user', User.routes(), User.allowedMethods());
+router.use('/account', Account.routes(), Account.allowedMethods());
 router.use('/config', Config.routes(), Config.allowedMethods());
 router.use('/test', testCase.routes(), testCase.allowedMethods());
 

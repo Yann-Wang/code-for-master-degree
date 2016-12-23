@@ -1,7 +1,7 @@
 /**
  * Created by gospray on 16-12-21.
  */
-let mongoose = require('mongoose')
+const mongoose = require('mongoose')
     ,Schema = mongoose.Schema;
 
 // 自增ID生成器
@@ -18,12 +18,15 @@ idg.getNewID = function(modelName, callback){
         if(doc){
             doc.currentid += 1;
         }else{
-            doc = new idg();
-            doc.modelname = modelName;
+            doc = new idg({modelname : modelName});
+            //doc.modelname = modelName;
         }
+
         doc.save(function(err){
-            if(err) throw err('IdGenerator.getNewID.save() error');
-            else callback(parseInt(doc.currentid.toString()));
+            if(err)
+                throw err('IdGenerator.getNewID.save() error');
+            else
+                callback(parseInt(doc.currentid.toString()));
         });
     });
 };

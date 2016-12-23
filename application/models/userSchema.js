@@ -7,11 +7,12 @@ let Schema = mongoose.Schema;
 const userSchema = new Schema({
     uid:{
         type: Number,
-        index: true
+        unique: true
     },
-    roles:{
-        type: Array,
-        default:['user']
+    phone:{
+        type: String,
+        required: true,
+        unique:true
     },
     hashed_password:{
         type: String,
@@ -20,6 +21,10 @@ const userSchema = new Schema({
     salt:{
         type:String,
         default:"secret"
+    },
+    roles:{
+        type: Array,
+        default:['user']
     },
     login_time:{
         type:Date,
@@ -33,25 +38,25 @@ const userSchema = new Schema({
         type:Date,
         default:Date.now
     },
-    phone:{
+
+    nickname:{ //昵称可以重复，不作为主键
         type: String,
-        required: true
-    },
-    nickname:{
-        type: String,
-        required: true
+        default: ""
     },
     sex:{
         type: Number,
-        required: true
+        default: 0
     },
     birthday:{
         type: Number,
-        required: true
+        default: function () {
+            //设置默认值为1990-01-01
+            return (new Date(1990,0,1)).getTime();
+        }
     },
     height:{
         type: String,
-        required: true
+        default:""
     },
     signature:{
         type: String,
@@ -66,13 +71,13 @@ const userSchema = new Schema({
 /**
  * 实现uid自增
  */
-userSchema.pre('save', function(next, done){
+userSchema.pre('save', function(next){
     let UserSchema = this;
     //获得一个新ID
     idg.getNewID('userSchema',function(newid){
         if(newid){
             UserSchema.uid = newid;
-            done(); //必须的，否则不会保存到mongo哦！
+            next(); //必须的，否则不会保存到mongo哦！
         }
     });
 });

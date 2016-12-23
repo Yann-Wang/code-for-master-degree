@@ -17,7 +17,8 @@ exports.check_account = function *(){
     }
 
     let user = yield tokenSchema.find({account: account});
-
+    //console.log(user);
+    //console.log(user[0].account);
     if (user.length > 0) {
 
         this.body={
