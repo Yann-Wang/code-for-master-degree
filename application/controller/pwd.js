@@ -4,6 +4,7 @@
 const md5Hex = require('md5-hex');
 const Err = require('../../config/error');
 const userSchema = require('../models/userSchema');
+const tokenSchema = require('../models/tokenSchema');
 let debug = require('debug')('app:pwd');
 
 
@@ -52,3 +53,42 @@ exports.handlePwd = function *(next) {
 
 };
 
+/**
+ * 忘记密码
+ */
+exports.handleForget = function *(next) {
+    let account = this.request.body.account;
+    let new_pwd = this.request.body.new_pwd;
+    let token   = this.request.body.token;
+
+    try{
+        let result = yield tokenSchema.findOne({account:account});
+
+        if(result.token === token){
+            let user = yield userSchema.findOne({phone: account});
+            let hashed_new_pwd = md5Hex([new_pwd,user.salt]);
+
+            yield userSchema.update({uid: user.uid},{hashed_password:hashed_new_pwd});
+
+            this.session.uid = user.uid;
+            this.session.roles = user.roles;
+
+            this.body = {
+                success: true
+            };
+            return false;
+        }else{
+            this.body = {
+                success: false,
+                error: Err.E1006
+            };
+        }
+
+    }catch(e){
+        this.body = {
+            success: false,
+            error: Err.E1006
+        };
+    }
+
+};

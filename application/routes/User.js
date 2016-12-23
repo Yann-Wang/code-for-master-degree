@@ -10,11 +10,16 @@ const auth     = require('../controller/auth');
 const captcha = require('../controller/captcha');
 
 router.post('/check',check.check_account);
+
 router.post('/login', login.handleLogin);
 router.post('/logout', logout.handleLogout);
+
 router.post('/register', register.handleRegister);
 router.put('/pwd',pwd.handlePwd);
+router.put('/forget',pwd.handleForget);
+
 router.post('/auth',auth.handleAuth);
+
 router.get('/code', captcha.get_PicCaptcha);
 router.post('/token', captcha.genCaptcha);
 
